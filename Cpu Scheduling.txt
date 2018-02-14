@@ -1,0 +1,210 @@
+#include <iostream>
+#include "Windows.h"
+
+using namespace std;
+
+
+int Option;
+
+int main()
+{
+
+	cout << "Menu" << endl;
+	cout << "1 --> BestFit" << endl;
+	cout << "2 --> FCFS" << endl;
+	cout << "3 --> Non Preemptive Priority" << endl;
+	cout << "0 --> Exit\n" << endl;
+	cout << "Please enter your option: " << endl;  
+	cin >> Option;
+
+	if (Option == 1)
+	{
+		system("cls");
+		int intfragment[20], b[20], p[20], i, j, nb, np, temp, lowest = 9999;
+		static int barray[20], parray[20];
+		cout << "\n\t\t\tMemory Management Project - Best Fit";
+		cout << "\n\nEnter the number of blocks:";
+		cin >> nb;
+		cout << "Enter the number of processes:";
+		cin >> np;
+
+		cout << "\nEnter the size of the blocks:-\n";
+		for (i = 1; i <= nb; i++)
+		{
+			cout << "Block no." << i << ":";
+			cin >> b[i];
+		}
+
+		cout << "\nEnter the size of the processes :-\n";
+		for (i = 1; i <= np; i++)
+		{
+			cout << "Process no. " << i << ":";
+			cin >> p[i];
+		}
+
+		for (i = 1; i <= np; i++)
+		{
+			for (j = 1; j <= nb; j++)
+			{
+				if (barray[j] != 1)
+				{
+					temp = b[j] - p[i];
+					if (temp >= 0)
+						if (lowest>temp)
+						{
+							parray[i] = j;
+							lowest = temp;
+						}
+				}
+			}
+
+			intfragment[i] = lowest;
+			barray[parray[i]] = 1;
+			lowest = 10000;
+		}
+
+		cout << "\nProcess_no\tProcess_size\tBlock_no\tBlock_size\tInternalFragment";
+		for (i = 1; i <= np && parray[i] != 0; i++)
+			cout << "\n" << i << "\t\t" << p[i] << "\t\t" << parray[i] << "\t\t" << b[parray[i]] << "\t\t" << intfragment[i] << "\n\n";
+		
+		system("pause");
+		system("cls");
+		return main();
+		
+	}
+
+	if (Option == 2)
+	{
+		system("cls");
+		int n, bt[20], wt[20], tat[20], avwt = 0, avtat = 0, i, j;
+		cout << "\n\t\t\tMemory Management Project - FCFS";
+		cout << "\n\nEnter total number of processes(maximum 20):";
+		cin >> n;
+
+		cout << "\nEnter Process Burst Time\n";
+		for (i = 0; i < n; i++)
+		{
+			cout << "P[" << i + 1 << "]:";
+			cin >> bt[i];
+		}
+
+		wt[0] = 0;    //waiting time for first process is 0
+
+					  //calculating waiting time
+		for (i = 1; i < n; i++)
+		{
+			wt[i] = 0;
+			for (j = 0; j < i; j++)
+				wt[i] += bt[j];
+		}
+
+		cout << "\nProcess\t\tBurst Time\tWaiting Time\tTurnaround Time";
+
+		//calculating turnaround time
+		for (i = 0; i < n; i++)
+		{
+			tat[i] = bt[i] + wt[i];
+			avwt += wt[i];
+			avtat += tat[i];
+			cout << "\nP[" << i + 1 << "]" << "\t\t" << bt[i] << "\t\t" << wt[i] << "\t\t" << tat[i];
+		}
+
+		avwt /= i;
+		avtat /= i;
+		cout << "\n\nAverage Waiting Time:" << avwt << "\n\n";
+		cout << "\nAverage Turnaround Time:" << avtat << "\n\n";
+
+		system("pause");
+		system("cls");
+		return main();
+	}
+
+	if (Option == 3)
+	{
+		system("cls");
+		int bt[20], p[20], wt[20], tat[20], pr[20], i, j, n, total = 0, pos, temp, avg_wt, avg_tat;
+		cout << "\n\t\tMemory Management Project - NonPreemptive Priority";
+		cout << "\n\nEnter Total Number of Process:";
+		cin >> n;
+
+		cout << "\nEnter Burst Time and Priority\n";
+		for (i = 0; i < n; i++)
+		{
+			cout << "\nP[" << i + 1 << "]\n";
+			cout << "Burst Time:";
+			cin >> bt[i];
+			cout << "Priority:";
+			cin >> pr[i];
+			p[i] = i + 1;           //contains process number
+		}
+
+		//sorting burst time, priority and process number in ascending order using selection sort
+		for (i = 0; i < n; i++)
+		{
+			pos = i;
+			for (j = i + 1; j < n; j++)
+			{
+				if (pr[j] < pr[pos])
+					pos = j;
+			}
+
+			temp = pr[i];
+			pr[i] = pr[pos];
+			pr[pos] = temp;
+
+			temp = bt[i];
+			bt[i] = bt[pos];
+			bt[pos] = temp;
+
+			temp = p[i];
+			p[i] = p[pos];
+			p[pos] = temp;
+		}
+
+		wt[0] = 0;            //waiting time for first process is zero
+
+							  //This is to calculate waiting time
+		for (i = 1; i < n; i++)
+		{
+			wt[i] = 0;
+			for (j = 0; j < i; j++)
+				wt[i] += bt[j];
+
+			total += wt[i];
+		}
+
+		avg_wt = total / n;      //This is  to calculate average waiting time
+		total = 0;
+
+		cout << "\nProcess\t    Burst Time    \tWaiting Time\tTurnaround Time";
+		for (i = 0; i < n; i++)
+		{
+			tat[i] = bt[i] + wt[i];     //calculate turnaround time
+			total += tat[i];
+			cout << "\nP[" << p[i] << "]\t\t  " << bt[i] << "\t\t    " << wt[i] << "\t\t\t" << tat[i];
+		}
+
+		avg_tat = total / n;     //This is to calculate average turnaround time
+		cout << "\n\nAverage Waiting Time=" << avg_wt;
+		cout << "\nAverage Turnaround Time=" << avg_tat << "\n\n";
+
+		system("pause");
+		system("cls");
+		return main();
+	}
+
+	if (Option == 0)
+	{
+		return 0;
+	}
+
+
+	else
+	{
+		cout << "\nIncorrect Option, Please Select another option!\n\n\n" << endl;
+		system("pause");
+		system("cls");
+		return main();
+	}
+
+}
